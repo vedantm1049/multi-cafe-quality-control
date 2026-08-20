@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cafe QC — Live Dashboard Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">Cafe QC</a>
+  <div class="tagline">Store-level refund &amp; rating quality dashboard — live demo</div>
+</header>
+<nav class="site">
+  <a href="index.html">Overview</a>
+  <a href="dashboard.html" class="active">Dashboard</a>
+  <a href="best.html">Best stores</a>
+  <a href="worst.html">Worst stores</a>
+  <a href="worst-skus.html">Worst SKUs</a>
+  <a href="action-points.html">Action points</a>
+</nav>
+<main>
+  <div class="banner">
+    This is a fixed demo built from a small, entirely synthetic sample
+    dataset (fabricated store names and numbers) — there's no upload
+    button and no backend, so it always shows the same sample period.
+    Everything below is computed with the exact same scoring logic as
+    <code>scripts/cafe_qc_engine.py</code>. See the
+    <a href="index.html">overview</a> for what's real vs. illustrative.
+  </div>
+
+  <h1>Store dashboard</h1>
+  <p class="lede">Sample period: <span id="date-range"></span></p>
+
+  <div class="toggle-group" id="region-toggle">
+    <button data-region="region_a" class="active">Region A</button>
+    <button data-region="region_b">Region B</button>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Store ranking</h2>
+    <p class="note">Lower composite score = better. Every eligible store
+      shown here uses the <b>no sample floor</b> baseline (matches
+      <code>/cafe-worst</code>); low-volume stores get a scoring handicap
+      (their refund rate and rating-badness are multiplied by their
+      tier's multiplier — Low ×1.30, Medium ×1.00, High ×0.75 — before
+      normalization), not a free pass. For Region B, stores marked
+      <span class="pill low">below best-floor</span> wouldn't qualify for
+      <code>/cafe-best</code> specifically (needs ≥10 rated orders and
+      ≥1,200 units sold) even though they're ranked here.</p>
+    <table>
+      <thead><tr>
+        <th>#</th><th>Store</th><th>Composite score</th><th>Avg rating</th>
+        <th>Refund %</th><th>Units sold</th><th>Volume tier</th><th></th>
+      </tr></thead>
+      <tbody id="rank-table"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Complaint-type breakdown</h2>
+    <div id="tag-breakdown"></div>
+    <table style="margin-top:12px">
+      <thead><tr><th>Complaint tag</th><th>Count</th></tr></thead>
+      <tbody id="complaint-table"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Refund reason &amp; category breakdown</h2>
+    <div style="display:flex; gap:24px; flex-wrap:wrap">
+      <div style="flex:1; min-width:240px">
+        <b style="font-size:13px">By reason</b>
+        <table><tbody id="reason-table"></tbody></table>
+      </div>
+      <div style="flex:1; min-width:240px">
+        <b style="font-size:13px">By category</b>
+        <table><tbody id="category-table"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Location filter</h2>
+    <p class="note">Every mapped store, including ones with no scoreable
+      data. Pick a store to see its detail.</p>
+    <select class="store-picker" id="store-picker"></select>
+    <div id="store-detail"></div>
+  </div>
+
+</main>
+<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
+
+<script>
+const DATA = {
+  "date_range": "sample period (synthetic)",
+  "regions": {
+    "region_a": {
+      "volume_tiers": [
+        {"label":"Low volume","min_units_sold":300,"max_units_sold":350,"n_stores":2},
+        {"label":"Medium volume","min_units_sold":900,"max_units_sold":1000,"n_stores":2},
+        {"label":"High volume","min_units_sold":2200,"max_units_sold":2500,"n_stores":2}
+      ],
+      "refund_reason_breakdown": {"quality_not_fresh":30,"wrong_item":24,"item_missing":1,"frozen_melted":2,"return_request_accepted":8,"chilled_room_temperature":3,"item_damaged":8},
+      "category_breakdown": {"Iced Drinks":40,"Hot Drinks":25,"Food":11},
+      "tag_polarity_breakdown": {"compliment":380,"complaint":140,"needs_human_read":35},
+      "complaint_detail": {"quality_not_fresh":30,"wrong_item":24,"late_delivery":6,"item_missing":1,"damaged_item":5},
+      "stores": [
+        {"store_name":"Garden District","eligible":true,"meets_best_floor":false,"composite_score":36.10,"volume_tier":"Low volume","volume_handicap_multiplier":1.30,"units_sold":350,"gmv":1575,"avg_rating":4.7,"rated_orders":30,"refund_events":1,"refund_rate_pct":0.286,"worst_skus":[{"title":"Cappuccino","refund_count":1}],"top_complaints":[]},
+        {"store_name":"Central Square","eligible":true,"meets_best_floor":true,"composite_score":46.05,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":2200,"gmv":9900,"avg_rating":4.6,"rated_orders":160,"refund_events":15,"refund_rate_pct":0.682,"worst_skus":[{"title":"Cold Brew","refund_count":7},{"title":"Flat White","refund_count":5},{"title":"Americano","refund_count":3}],"top_complaints":[{"tag":"late_delivery","count":4},{"tag":"wrong_item","count":2}]},
+        {"store_name":"Old Mill","eligible":true,"meets_best_floor":false,"composite_score":46.90,"volume_tier":"Medium volume","volume_handicap_multiplier":1.00,"units_sold":900,"gmv":4050,"avg_rating":4.5,"rated_orders":70,"refund_events":5,"refund_rate_pct":0.556,"worst_skus":[{"title":"Matcha Latte","refund_count":3},{"title":"Cold Brew","refund_count":2}],"top_complaints":[{"tag":"quality_not_fresh","count":2}]},
+        {"store_name":"Harbor Point","eligible":true,"meets_best_floor":false,"composite_score":84.54,"volume_tier":"Medium volume","volume_handicap_multiplier":1.00,"units_sold":1000,"gmv":4500,"avg_rating":4.1,"rated_orders":80,"refund_events":12,"refund_rate_pct":1.200,"worst_skus":[{"title":"Iced Latte","refund_count":6},{"title":"Mocha","refund_count":4},{"title":"Croissant","refund_count":2}],"top_complaints":[{"tag":"wrong_item","count":5},{"tag":"quality_not_fresh","count":3}]},
+        {"store_name":"Lakeside","eligible":true,"meets_best_floor":true,"composite_score":85.29,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":2500,"gmv":11250,"avg_rating":3.9,"rated_orders":190,"refund_events":40,"refund_rate_pct":1.600,"worst_skus":[{"title":"Iced Latte","refund_count":18},{"title":"Cappuccino","refund_count":12},{"title":"Mocha","refund_count":10}],"top_complaints":[{"tag":"quality_not_fresh","count":14},{"tag":"wrong_item","count":9},{"tag":"damaged_item","count":5}]},
+        {"store_name":"Maple Street","eligible":true,"meets_best_floor":false,"composite_score":89.60,"volume_tier":"Low volume","volume_handicap_multiplier":1.30,"units_sold":300,"gmv":1350,"avg_rating":4.2,"rated_orders":25,"refund_events":3,"refund_rate_pct":1.000,"worst_skus":[{"title":"Iced Latte","refund_count":2},{"title":"Croissant","refund_count":1}],"top_complaints":[{"tag":"quality_not_fresh","count":2},{"tag":"wrong_item","count":1}]}
+      ]
+    },
+    "region_b": {
+      "volume_tiers": [
+        {"label":"Low volume","min_units_sold":400,"max_units_sold":600,"n_stores":3},
+        {"label":"Medium volume","min_units_sold":1300,"max_units_sold":1700,"n_stores":3},
+        {"label":"High volume","min_units_sold":2600,"max_units_sold":3600,"n_stores":4}
+      ],
+      "refund_reason_breakdown": {"wrong_item":52,"quality_not_fresh":39,"item_missing":10,"frozen_melted":14,"item_damaged":15,"return_request_accepted":10,"chilled_room_temperature":8},
+      "category_breakdown": {"Iced Drinks":85,"Hot Drinks":48,"Food":15},
+      "tag_polarity_breakdown": {"compliment":720,"complaint":210,"needs_human_read":40},
+      "complaint_detail": {"quality_not_fresh":39,"wrong_item":40,"missing_item":3,"damaged_item":12,"late_delivery":8},
+      "stores": [
+        {"store_name":"Brookside","eligible":true,"meets_best_floor":true,"composite_score":37.38,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":3600,"gmv":16200,"avg_rating":4.65,"rated_orders":277,"refund_events":14,"refund_rate_pct":0.389,"worst_skus":[{"title":"Cold Brew","refund_count":9},{"title":"Chai Latte","refund_count":5}],"top_complaints":[{"tag":"quality_not_fresh","count":7}]},
+        {"store_name":"Willow Park","eligible":true,"meets_best_floor":true,"composite_score":37.58,"volume_tier":"Medium volume","volume_handicap_multiplier":1.00,"units_sold":1700,"gmv":7650,"avg_rating":4.75,"rated_orders":130,"refund_events":5,"refund_rate_pct":0.294,"worst_skus":[{"title":"Chai Latte","refund_count":3},{"title":"Cappuccino","refund_count":2}],"top_complaints":[{"tag":"missing_item","count":2}]},
+        {"store_name":"Sunset Corner","eligible":true,"meets_best_floor":true,"composite_score":43.90,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":2600,"gmv":11700,"avg_rating":4.55,"rated_orders":200,"refund_events":18,"refund_rate_pct":0.692,"worst_skus":[{"title":"Cold Brew","refund_count":10},{"title":"Iced Latte","refund_count":8}],"top_complaints":[{"tag":"quality_not_fresh","count":9}]},
+        {"store_name":"Uptown","eligible":true,"meets_best_floor":false,"composite_score":44.71,"volume_tier":"Low volume","volume_handicap_multiplier":1.30,"units_sold":500,"gmv":2250,"avg_rating":4.8,"rated_orders":38,"refund_events":2,"refund_rate_pct":0.400,"worst_skus":[{"title":"Chai Latte","refund_count":2}],"top_complaints":[{"tag":"missing_item","count":1}]},
+        {"store_name":"Midtown","eligible":true,"meets_best_floor":true,"composite_score":45.66,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":3200,"gmv":14400,"avg_rating":4.5,"rated_orders":246,"refund_events":25,"refund_rate_pct":0.781,"worst_skus":[{"title":"Matcha Latte","refund_count":15},{"title":"Americano","refund_count":10}],"top_complaints":[{"tag":"wrong_item","count":13}]},
+        {"store_name":"Eastgate","eligible":true,"meets_best_floor":true,"composite_score":46.36,"volume_tier":"Medium volume","volume_handicap_multiplier":1.00,"units_sold":1300,"gmv":5850,"avg_rating":4.6,"rated_orders":100,"refund_events":8,"refund_rate_pct":0.615,"worst_skus":[{"title":"Iced Latte","refund_count":5},{"title":"Espresso","refund_count":3}],"top_complaints":[{"tag":"wrong_item","count":4},{"tag":"damaged_item","count":2}]},
+        {"store_name":"Northbridge","eligible":true,"meets_best_floor":true,"composite_score":65.33,"volume_tier":"Medium volume","volume_handicap_multiplier":1.00,"units_sold":1500,"gmv":6750,"avg_rating":4.2,"rated_orders":115,"refund_events":20,"refund_rate_pct":1.333,"worst_skus":[{"title":"Flat White","refund_count":10},{"title":"Mocha","refund_count":6},{"title":"Americano","refund_count":4}],"top_complaints":[{"tag":"late_delivery","count":8},{"tag":"wrong_item","count":5}]},
+        {"store_name":"Fairview","eligible":true,"meets_best_floor":true,"composite_score":70.57,"volume_tier":"High volume","volume_handicap_multiplier":0.75,"units_sold":2900,"gmv":13050,"avg_rating":3.7,"rated_orders":223,"refund_events":60,"refund_rate_pct":2.069,"worst_skus":[{"title":"Iced Latte","refund_count":28},{"title":"Cappuccino","refund_count":20},{"title":"Mocha","refund_count":12}],"top_complaints":[{"tag":"quality_not_fresh","count":25},{"tag":"wrong_item","count":18},{"tag":"damaged_item","count":10}]},
+        {"store_name":"Riverside","eligible":true,"meets_best_floor":false,"composite_score":83.96,"volume_tier":"Low volume","volume_handicap_multiplier":1.30,"units_sold":400,"gmv":1800,"avg_rating":4.3,"rated_orders":30,"refund_events":6,"refund_rate_pct":1.500,"worst_skus":[{"title":"Cappuccino","refund_count":4},{"title":"Croissant","refund_count":2}],"top_complaints":[{"tag":"wrong_item","count":3},{"tag":"quality_not_fresh","count":2}]},
+        {"store_name":"Foothill","eligible":true,"meets_best_floor":false,"composite_score":87.00,"volume_tier":"Low volume","volume_handicap_multiplier":1.30,"units_sold":600,"gmv":2700,"avg_rating":4.0,"rated_orders":46,"refund_events":10,"refund_rate_pct":1.667,"worst_skus":[{"title":"Matcha Latte","refund_count":6},{"title":"Cold Brew","refund_count":4}],"top_complaints":[{"tag":"quality_not_fresh","count":5},{"tag":"late_delivery","count":2}]}
+      ]
+    }
+  }
+};
+
+let currentRegion = "region_a";
+
+function tierClass(label) {
+  if (label.startsWith("Low")) return "low";
+  if (label.startsWith("Medium")) return "medium";
+  return "high";
+}
+
+function render() {
+  const region = DATA.regions[currentRegion];
+  document.getElementById("date-range").textContent = DATA.date_range;
+
+  const sorted = [...region.stores].sort((a,b) => a.composite_score - b.composite_score);
+  const rankBody = document.getElementById("rank-table");
+  rankBody.innerHTML = sorted.map((s, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${s.store_name}</td>
+      <td>${s.composite_score.toFixed(2)}</td>
+      <td>${s.avg_rating.toFixed(2)}</td>
+      <td>${s.refund_rate_pct.toFixed(2)}%</td>
+      <td>${s.units_sold.toLocaleString()}</td>
+      <td><span class="pill ${tierClass(s.volume_tier)}">${s.volume_tier}</span></td>
+      <td>${currentRegion === "region_b" && !s.meets_best_floor ? '<span class="pill low">below best-floor</span>' : ''}</td>
+    </tr>`).join("");
+
+  document.getElementById("complaint-table").innerHTML = Object.entries(region.complaint_detail)
+    .sort((a,b) => b[1]-a[1])
+    .map(([tag, count]) => `<tr><td>${tag}</td><td>${count}</td></tr>`).join("");
+
+  const tp = region.tag_polarity_breakdown;
+  document.getElementById("tag-breakdown").innerHTML = `
+    <div class="chip-list">
+      <span>Compliment: ${tp.compliment}</span>
+      <span>Complaint: ${tp.complaint}</span>
+      <span>Needs human read: ${tp.needs_human_read}</span>
+    </div>`;
+
+  document.getElementById("reason-table").innerHTML = Object.entries(region.refund_reason_breakdown)
+    .sort((a,b) => b[1]-a[1])
+    .map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+  document.getElementById("category-table").innerHTML = Object.entries(region.category_breakdown)
+    .sort((a,b) => b[1]-a[1])
+    .map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+
+  const picker = document.getElementById("store-picker");
+  picker.innerHTML = region.stores.map(s => `<option value="${s.store_name}">${s.store_name}</option>`).join("");
+  renderStoreDetail(region.stores[0]);
+  picker.onchange = () => {
+    const s = region.stores.find(x => x.store_name === picker.value);
+    renderStoreDetail(s);
+  };
+}
+
+function renderStoreDetail(s) {
+  const el = document.getElementById("store-detail");
+  el.innerHTML = `
+    <div class="metric-grid">
+      <div class="metric"><div class="label">Units sold</div><div class="value">${s.units_sold.toLocaleString()}</div></div>
+      <div class="metric"><div class="label">GMV</div><div class="value">$${s.gmv.toLocaleString()}</div></div>
+      <div class="metric"><div class="label">Avg rating</div><div class="value">${s.avg_rating.toFixed(2)}</div></div>
+      <div class="metric"><div class="label">Refund events</div><div class="value">${s.refund_events}</div></div>
+      <div class="metric"><div class="label">Refund %</div><div class="value">${s.refund_rate_pct.toFixed(2)}%</div></div>
+      <div class="metric"><div class="label">Volume tier</div><div class="value" style="font-size:14px">${s.volume_tier}</div></div>
+    </div>
+    <div style="margin-top:14px">
+      <b style="font-size:13px">Worst SKUs</b>
+      <table><tbody>${s.worst_skus.map(sku => `<tr><td>${sku.title}</td><td>${sku.refund_count}</td></tr>`).join("") || '<tr><td colspan="2">None recorded</td></tr>'}</tbody></table>
+    </div>
+    <div style="margin-top:14px">
+      <b style="font-size:13px">Top complaints</b>
+      <table><tbody>${s.top_complaints.map(c => `<tr><td>${c.tag}</td><td>${c.count}</td></tr>`).join("") || '<tr><td colspan="2">None recorded</td></tr>'}</tbody></table>
+    </div>`;
+}
+
+document.getElementById("region-toggle").addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  currentRegion = btn.dataset.region;
+  document.querySelectorAll("#region-toggle button").forEach(b => b.classList.toggle("active", b === btn));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "cafe-qc",
+  "version": "0.1.0",
+  "description": "Store-level refund and rating quality analysis for a multi-region coffee retail network, built from a periodic QC data export.",
+  "author": {
+    "name": "Vedant"
+  },
+  "keywords": ["cafe", "qc", "quality", "refunds", "ratings", "retail-ops"]
+}

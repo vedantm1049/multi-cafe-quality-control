@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cafe QC — Live Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">Cafe QC</a>
+  <div class="tagline">Store-level refund &amp; rating quality analysis for a multi-region coffee retail network</div>
+</header>
+<nav class="site">
+  <a href="index.html" class="active">Overview</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="best.html">Best stores</a>
+  <a href="worst.html">Worst stores</a>
+  <a href="worst-skus.html">Worst SKUs</a>
+  <a href="action-points.html">Action points</a>
+</nav>
+<main>
+  <h1>What this is</h1>
+  <p class="lede">A Claude Code / Cowork plugin that turns a periodic 8-sheet
+    QC export (refunds, ratings, sales, store mapping — across two
+    regions) into a conversation: upload the file, ask a question or run
+    a slash command, and get back a ranked table, a chart, or an
+    exportable sheet, all built on one shared, locked scoring engine.</p>
+
+  <div class="banner">
+    <b>What's real vs. what's illustrative on this site:</b> the scoring
+    engine (<code>scripts/cafe_qc_engine.py</code>) and every number on
+    these pages were computed using its exact formulas — composite
+    scores, volume-tier handicaps, and the asymmetric sample floor are
+    all genuinely calculated, not fudged. What's <i>not</i> real is the
+    underlying data: 16 fabricated stores across two synthetic regions,
+    with invented store names, refunds, ratings, and sales, built to
+    exercise the engine's real code paths (alias fixes, an excluded
+    location, a mapping collision, all three volume tiers). This site is
+    a fixed snapshot with no upload button and no backend — to run this
+    against a real export, use the plugin inside Claude Code/Cowork (see
+    the repo README).
+  </div>
+
+  <h2>Explore the demo</h2>
+  <div class="card">
+    <table>
+      <tbody>
+        <tr><td style="width:180px"><a href="dashboard.html"><b>Dashboard</b></a></td><td>Interactive — region toggle, ranked store table, complaint breakdown, location filter with a store picker.</td></tr>
+        <tr><td><a href="best.html"><b>Best stores</b></a></td><td>Top-performing stores by composite score, per region.</td></tr>
+        <tr><td><a href="worst.html"><b>Worst stores</b></a></td><td>Stores to prioritize, per region — framed as a list to investigate, not a scoreboard.</td></tr>
+        <tr><td><a href="worst-skus.html"><b>Worst SKUs</b></a></td><td>Most-refunded products, broken down per store.</td></tr>
+        <tr><td><a href="action-points.html"><b>Action points</b></a></td><td>Prioritized store &times; defect-type fixes, ranked by expected refund cost.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>How it works</h2>
+  <p>Every skill follows the same loop: <b>locate</b> the uploaded
+    workbook, <b>validate</b> it against a locked data contract,
+    <b>elicit</b> only what can't be inferred (region, timeframe, count),
+    <b>run</b> the shared Python engine, then <b>present</b> the result in
+    the format that command specifies. Full detail is in the repo's
+    <code>references/</code> docs.</p>
+
+  <h2>Source &amp; license</h2>
+  <p>Full source, including the engine, all six skill definitions, and
+    the data contract/scoring reference docs, is in this repo. MIT
+    licensed.</p>
+</main>
+<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
+</body>
+</html>

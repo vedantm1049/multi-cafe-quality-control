@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cafe QC — Worst SKUs Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">Cafe QC</a>
+  <div class="tagline">Store-level refund &amp; rating quality dashboard — live demo</div>
+</header>
+<nav class="site">
+  <a href="index.html">Overview</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="best.html">Best stores</a>
+  <a href="worst.html">Worst stores</a>
+  <a href="worst-skus.html" class="active">Worst SKUs</a>
+  <a href="action-points.html">Action points</a>
+</nav>
+<main>
+  <div class="banner">Synthetic sample data — see the <a href="index.html">overview</a> for what's real vs. illustrative.</div>
+  <h1>Most-refunded products by store</h1>
+  <p class="lede">Ranked by raw refund count per SKU per store, not normalized by sales. Output of <code>/cafe-worst-skus</code>. Stores ordered by total refund events, descending.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Region B</h2>
+    <table>
+      <thead><tr><th>Store</th><th>Product</th><th>Refund count</th><th>Store total refund events</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">Fairview</td><td>Iced Latte</td><td>28</td><td rowspan="3">60</td></tr>
+        <tr><td>Cappuccino</td><td>20</td></tr>
+        <tr><td>Mocha</td><td>12</td></tr>
+        <tr><td rowspan="2">Midtown</td><td>Matcha Latte</td><td>15</td><td rowspan="2">25</td></tr>
+        <tr><td>Americano</td><td>10</td></tr>
+        <tr><td rowspan="3">Northbridge</td><td>Flat White</td><td>10</td><td rowspan="3">20</td></tr>
+        <tr><td>Mocha</td><td>6</td></tr>
+        <tr><td>Americano</td><td>4</td></tr>
+        <tr><td rowspan="2">Sunset Corner</td><td>Cold Brew</td><td>10</td><td rowspan="2">18</td></tr>
+        <tr><td>Iced Latte</td><td>8</td></tr>
+        <tr><td rowspan="2">Foothill</td><td>Matcha Latte</td><td>6</td><td rowspan="2">10</td></tr>
+        <tr><td>Cold Brew</td><td>4</td></tr>
+        <tr><td rowspan="2">Riverside</td><td>Cappuccino</td><td>4</td><td rowspan="2">6</td></tr>
+        <tr><td>Croissant</td><td>2</td></tr>
+        <tr><td rowspan="2">Eastgate</td><td>Iced Latte</td><td>5</td><td rowspan="2">8</td></tr>
+        <tr><td>Espresso</td><td>3</td></tr>
+        <tr><td rowspan="2">Brookside</td><td>Cold Brew</td><td>9</td><td rowspan="2">14</td></tr>
+        <tr><td>Chai Latte</td><td>5</td></tr>
+        <tr><td rowspan="2">Willow Park</td><td>Chai Latte</td><td>3</td><td rowspan="2">5</td></tr>
+        <tr><td>Cappuccino</td><td>2</td></tr>
+        <tr><td>Uptown</td><td>Chai Latte</td><td>2</td><td>2</td></tr>
+      </tbody>
+    </table>
+    <p class="note"><b>Fairview</b> (60 total refund events, the most of any Region B store) is led by Iced Latte and Cappuccino — consistent with its low 3.70 rating and appearance as the top genuine concern on the worst-stores page. Iced Latte and Cappuccino recur across several stores as top refunded items, worth checking for a prep or dispense issue common to those drinks rather than a store-specific one.</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Region A</h2>
+    <table>
+      <thead><tr><th>Store</th><th>Product</th><th>Refund count</th><th>Store total refund events</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">Lakeside</td><td>Iced Latte</td><td>18</td><td rowspan="3">40</td></tr>
+        <tr><td>Cappuccino</td><td>12</td></tr>
+        <tr><td>Mocha</td><td>10</td></tr>
+        <tr><td rowspan="3">Central Square</td><td>Cold Brew</td><td>7</td><td rowspan="3">15</td></tr>
+        <tr><td>Flat White</td><td>5</td></tr>
+        <tr><td>Americano</td><td>3</td></tr>
+        <tr><td rowspan="3">Harbor Point</td><td>Iced Latte</td><td>6</td><td rowspan="3">12</td></tr>
+        <tr><td>Mocha</td><td>4</td></tr>
+        <tr><td>Croissant</td><td>2</td></tr>
+        <tr><td rowspan="2">Old Mill</td><td>Matcha Latte</td><td>3</td><td rowspan="2">5</td></tr>
+        <tr><td>Cold Brew</td><td>2</td></tr>
+        <tr><td rowspan="2">Maple Street</td><td>Iced Latte</td><td>2</td><td rowspan="2">3</td></tr>
+        <tr><td>Croissant</td><td>1</td></tr>
+        <tr><td>Garden District</td><td>Cappuccino</td><td>1</td><td>1</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Lakeside — Region A's worst-scoring high-volume store — is led by the same Iced Latte / Cappuccino / Mocha pattern seen at Fairview in Region B.</p>
+  </div>
+</main>
+<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
+</body>
+</html>

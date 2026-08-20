@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cafe QC — Best Stores Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">Cafe QC</a>
+  <div class="tagline">Store-level refund &amp; rating quality dashboard — live demo</div>
+</header>
+<nav class="site">
+  <a href="index.html">Overview</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="best.html" class="active">Best stores</a>
+  <a href="worst.html">Worst stores</a>
+  <a href="worst-skus.html">Worst SKUs</a>
+  <a href="action-points.html">Action points</a>
+</nav>
+<main>
+  <div class="banner">Synthetic sample data — see the <a href="index.html">overview</a> for what's real vs. illustrative.</div>
+  <h1>Best-performing stores</h1>
+  <p class="lede">Lower composite score = better. Output of <code>/cafe-best</code>.</p>
+
+  <div class="card">
+    <h2 style="margin-top:0">Region A — all 6 stores (no sample floor)</h2>
+    <table>
+      <thead><tr><th>#</th><th>Store</th><th>Composite score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th><th>Volume tier</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Garden District</td><td>36.10</td><td>4.70</td><td>0.29%</td><td>350</td><td><span class="pill low">Low volume</span></td></tr>
+        <tr><td>2</td><td>Central Square</td><td>46.05</td><td>4.60</td><td>0.68%</td><td>2,200</td><td><span class="pill high">High volume</span></td></tr>
+        <tr><td>3</td><td>Old Mill</td><td>46.90</td><td>4.50</td><td>0.56%</td><td>900</td><td><span class="pill medium">Medium volume</span></td></tr>
+        <tr><td>4</td><td>Harbor Point</td><td>84.54</td><td>4.10</td><td>1.20%</td><td>1,000</td><td><span class="pill medium">Medium volume</span></td></tr>
+        <tr><td>5</td><td>Lakeside</td><td>85.29</td><td>3.90</td><td>1.60%</td><td>2,500</td><td><span class="pill high">High volume</span></td></tr>
+        <tr><td>6</td><td>Maple Street</td><td>89.60</td><td>4.20</td><td>1.00%</td><td>300</td><td><span class="pill low">Low volume</span></td></tr>
+      </tbody>
+    </table>
+    <p class="note">Region A never applies a sample floor for either <code>/cafe-best</code> or <code>/cafe-worst</code> — its small master list means low volume is itself part of what's under investigation, not noise to filter out.</p>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0">Region B — top 5 of 7 eligible stores (sample floor applied)</h2>
+    <table>
+      <thead><tr><th>#</th><th>Store</th><th>Composite score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th><th>Volume tier</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Brookside</td><td>37.38</td><td>4.65</td><td>0.39%</td><td>3,600</td><td><span class="pill high">High volume</span></td></tr>
+        <tr><td>2</td><td>Willow Park</td><td>37.60</td><td>4.75</td><td>0.29%</td><td>1,700</td><td><span class="pill medium">Medium volume</span></td></tr>
+        <tr><td>3</td><td>Midtown</td><td>48.50</td><td>4.50</td><td>0.78%</td><td>3,200</td><td><span class="pill high">High volume</span></td></tr>
+        <tr><td>4</td><td>Sunset Corner</td><td>52.17</td><td>4.55</td><td>0.69%</td><td>2,600</td><td><span class="pill medium">Medium volume</span></td></tr>
+        <tr><td>5</td><td>Eastgate</td><td>55.96</td><td>4.60</td><td>0.62%</td><td>1,300</td><td><span class="pill low">Low volume</span></td></tr>
+      </tbody>
+    </table>
+    <p class="note"><b>3 stores excluded by the sample floor</b> (≥10 rated orders, ≥1,200 units sold): Riverside, Uptown, Foothill — all below 1,200 units sold this period. They're still ranked in <a href="worst.html">worst stores</a> and the <a href="dashboard.html">dashboard</a>, since that floor only applies to <code>/cafe-best</code> in Region B.</p>
+    <p class="note"><b>Why Eastgate's score differs from the dashboard:</b> here it's 55.96; on the dashboard/worst page it's 46.36 for the exact same store and period. That's not a bug — the engine recomputes volume tiers and normalizes fresh <i>within whichever population is eligible for that specific call</i>. Excluding Riverside/Uptown/Foothill from Region B's best-eligible pool shifts Eastgate from the "Medium" tier (among all 10 stores) into the "Low" tier (among the 7 floor-passing stores), which changes its handicap multiplier and therefore its score. See "Volume handicap" in <code>references/data-contract-and-scoring.md</code>.</p>
+  </div>
+</main>
+<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
+</body>
+</html>
