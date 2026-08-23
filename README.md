@@ -3,7 +3,7 @@
 Store-level refund and rating quality analysis for a multi-region coffee
 retail network, built from a periodic 8-sheet QC data export.
 
-**[Live demo](https://vedantm1049.github.io/cafe-qc/)** — a static,
+**[Live demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** — a static,
 pre-baked version of the dashboard, built from the synthetic sample data
 bundled in this repo. See "Live demo & real data" below for what that
 does and doesn't include.
