@@ -1,4 +1,4 @@
-# Cafe QC
+# Multi-Chain Quality Control
 
 Store-level refund and rating quality analysis for a multi-region coffee
 retail network, built from a periodic 8-sheet QC data export.
