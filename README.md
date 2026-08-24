@@ -91,6 +91,8 @@ Every skill follows the same five-step loop:
 4. **Run** — call the shared Python scoring engine.
 5. **Present** — return the result as a table, chart, exportable sheet, dashboard or conversational analysis.
 
+The Claude/Cowork skills, Streamlit app and static-demo builder all call the same canonical `scripts/cafe_qc_engine.py`; there is no separate web scoring implementation.
+
 ## Input data
 
 The current implementation expects a fresh 8-sheet `.xlsx` workbook for each analysis period:
@@ -120,6 +122,8 @@ The composite QC score combines two **badness / risk** measures:
 Both are adjusted using the same volume handicap before being combined.
 
 **Lower score = better quality. Higher score = greater QC risk.**
+
+Regression tests lock that directionality: a higher rating cannot increase risk, and a higher refund rate cannot reduce risk when the other input is held constant.
 
 <details>
 <summary><strong>Volume-aware store scoring</strong></summary>
@@ -167,9 +171,9 @@ For the complete implementation details, see `references/data-contract-and-scori
 
 `scripts/sample_workbook.py` defines the deterministic synthetic dataset used by the Streamlit sample flow.
 
-`scripts/build_static_demo.py` regenerates the GitHub Pages demo artifacts from that same workbook, and `.github/workflows/build-static-demo.yml` provides a repeatable build path when the sample or scoring logic changes.
+`scripts/build_static_demo.py` regenerates the GitHub Pages demo artifacts from that same workbook, and `.github/workflows/build-static-demo.yml` runs the regression tests before rebuilding whenever the scoring logic, tests or sample data change.
 
-That keeps the live sample and static preview from becoming two unrelated demos over time.
+That keeps the agent workflow, live app and static preview on one scoring implementation rather than allowing multiple versions to drift apart.
 
 ## Installation
 
@@ -181,14 +185,20 @@ git clone https://github.com/vedantm1049/multi-cafe-quality-control.git
 
 No external API credentials are required for the deterministic QC engine. Python dependencies are listed in `requirements.txt`.
 
+To run the scoring regression tests locally:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
 ## Project structure
 
 ```text
 streamlit_app.py                 Live upload-and-analyze web app
-scripts/cafe_qc_engine.py        Core validation and scoring engine
-scripts/cafe_qc_web_engine.py    Corrected web/demo scoring entrypoint
+scripts/cafe_qc_engine.py        Canonical validation and scoring engine
 scripts/sample_workbook.py       Shared synthetic sample generator
 scripts/build_static_demo.py     Static demo build step
+tests/test_scoring.py            Score-direction regression tests
 skills/                          Six agent skills / commands
 references/                      Data contract, scoring and workflow docs
 docs/                            GitHub Pages static preview
