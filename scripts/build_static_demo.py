@@ -15,7 +15,7 @@ from sample_workbook import build_sample_workbook
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ENGINE = ROOT / "scripts" / "cafe_qc_web_engine.py"
+ENGINE = ROOT / "scripts" / "cafe_qc_engine.py"
 DOCS = ROOT / "docs"
 
 
