@@ -1,60 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Cafe QC — Worst Stores Demo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="site">
-  <a class="brand" href="index.html">Cafe QC</a>
-  <div class="tagline">Store-level refund &amp; rating quality dashboard — live demo</div>
-</header>
-<nav class="site">
-  <a href="index.html">Overview</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="best.html">Best stores</a>
-  <a href="worst.html" class="active">Worst stores</a>
-  <a href="worst-skus.html">Worst SKUs</a>
-  <a href="action-points.html">Action points</a>
-</nav>
-<main>
-  <div class="banner">Synthetic sample data — see the <a href="index.html">overview</a> for what's real vs. illustrative.</div>
-  <h1>Stores to prioritize</h1>
-  <p class="lede">Higher composite score = worse. Output of <code>/cafe-worst</code>. Treat this as a list to investigate, not a scoreboard.</p>
-
-  <div class="card">
-    <h2 style="margin-top:0">Region A — all 6 stores (no sample floor, as always)</h2>
-    <table>
-      <thead><tr><th>#</th><th>Store</th><th>Composite score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th><th>Volume tier</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Maple Street</td><td>89.60</td><td>4.20</td><td>1.00%</td><td>300</td><td><span class="pill low">Low volume</span></td></tr>
-        <tr><td>2</td><td>Lakeside</td><td>85.29</td><td>3.90</td><td>1.60%</td><td>2,500</td><td><span class="pill high">High volume</span></td></tr>
-        <tr><td>3</td><td>Harbor Point</td><td>84.54</td><td>4.10</td><td>1.20%</td><td>1,000</td><td><span class="pill medium">Medium volume</span></td></tr>
-        <tr><td>4</td><td>Old Mill</td><td>46.90</td><td>4.50</td><td>0.56%</td><td>900</td><td><span class="pill medium">Medium volume</span></td></tr>
-        <tr><td>5</td><td>Central Square</td><td>46.05</td><td>4.60</td><td>0.68%</td><td>2,200</td><td><span class="pill high">High volume</span></td></tr>
-      </tbody>
-    </table>
-    <p class="note">Lakeside is a good example of the handicap working as intended: it's a high-volume store (0.75× credit) but its raw refund rate (1.6%) and rating (3.9) are bad enough that the credit isn't enough to save it from 2nd-worst.</p>
-  </div>
-
-  <div class="card">
-    <h2 style="margin-top:0">Region B — top 5 of 10 stores (no sample floor)</h2>
-    <table>
-      <thead><tr><th>#</th><th>Store</th><th>Composite score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th><th>Volume tier</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Foothill</td><td>87.00</td><td>4.00</td><td>1.67%</td><td>600</td><td><span class="pill low">Low volume</span></td></tr>
-        <tr><td>2</td><td>Riverside</td><td>83.96</td><td>4.30</td><td>1.50%</td><td>400</td><td><span class="pill low">Low volume</span></td></tr>
-        <tr><td>3</td><td>Fairview</td><td>70.57</td><td>3.70</td><td>2.07%</td><td>2,900</td><td><span class="pill high">High volume</span></td></tr>
-        <tr><td>4</td><td>Northbridge</td><td>65.33</td><td>4.20</td><td>1.33%</td><td>1,500</td><td><span class="pill medium">Medium volume</span></td></tr>
-        <tr><td>5</td><td>Eastgate</td><td>46.36</td><td>4.60</td><td>0.62%</td><td>1,300</td><td><span class="pill medium">Medium volume</span></td></tr>
-      </tbody>
-    </table>
-    <p class="note"><b>Fairview is the standout genuine concern here:</b> it's a high-volume store (2,900 units, the volume credit working in its favor) yet still lands 3rd-worst — its 2.07% refund rate and 3.70 rating are bad enough that no amount of volume credit rescues it. That combination (high volume + genuinely poor numbers) is a stronger signal than a quiet store having a rough week. Foothill and Riverside, by contrast, are both low-volume stores where the handicap makes their numbers look worse for comparison purposes — worth checking they aren't just noisy small samples (Foothill: 10 refund events off only 600 units sold).</p>
-    <p class="note">Note Riverside, Foothill (and Uptown) don't appear at all on the <a href="best.html">best-stores page</a> — they're below Region B's best-store sample floor (≥1,200 units sold), which only applies to <code>/cafe-best</code>. A store can be ranked here without being eligible there; that's expected.</p>
-  </div>
-</main>
-<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Multi-Chain QC — Stores to Prioritize</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="site"><a class="brand" href="index.html">Multi-Chain QC</a><div class="tagline">Stores to prioritize — shared synthetic sample</div></header>
+<nav class="site"><a href="index.html">Overview</a><a href="dashboard.html">Dashboard</a><a href="best.html">Best stores</a><a href="worst.html" class="active">Worst stores</a><a href="worst-skus.html">Worst SKUs</a><a href="action-points.html">Action points</a></nav>
+<main><div class="banner">Generated from the same synthetic workbook used by the Streamlit app. Higher QC risk score = worse.</div>
+<h1>Stores to prioritize</h1>
+<div class="card"><h2 style="margin-top:0">Region A — top 5</h2><table><thead><tr><th>#</th><th>Store</th><th>QC risk score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th></tr></thead><tbody>
+<tr><td>1</td><td>Central Market</td><td>78.57</td><td>3.57</td><td>1.714%</td><td>1,400</td></tr>
+<tr><td>2</td><td>Garden District</td><td>47.02</td><td>3.87</td><td>0.947%</td><td>1,900</td></tr>
+<tr><td>3</td><td>Old Mill</td><td>13.32</td><td>4.28</td><td>0.290%</td><td>3,100</td></tr>
+<tr><td>4</td><td>Harbor Point</td><td>4.94</td><td>4.60</td><td>0.104%</td><td>4,800</td></tr>
+<tr><td>5</td><td>Creek Walk</td><td>4.22</td><td>4.60</td><td>0.154%</td><td>5,200</td></tr>
+</tbody></table></div>
+<div class="card"><h2 style="margin-top:0">Region B — top 5</h2><table><thead><tr><th>#</th><th>Store</th><th>QC risk score</th><th>Avg rating</th><th>Refund %</th><th>Units sold</th></tr></thead><tbody>
+<tr><td>1</td><td>Market Street</td><td>78.57</td><td>3.57</td><td>1.122%</td><td>980</td></tr>
+<tr><td>2</td><td>City Gate</td><td>69.10</td><td>3.62</td><td>0.962%</td><td>2,600</td></tr>
+<tr><td>3</td><td>South Quay</td><td>65.62</td><td>3.93</td><td>0.971%</td><td>1,750</td></tr>
+<tr><td>4</td><td>Fairview</td><td>37.57</td><td>3.89</td><td>0.667%</td><td>3,300</td></tr>
+<tr><td>5</td><td>Canal Walk</td><td>20.43</td><td>4.26</td><td>0.349%</td><td>4,300</td></tr>
+</tbody></table><p class="note">Worst-store analysis intentionally does not hide low-volume stores. Market Street is therefore visible here even though it is excluded from Region B's best-store list.</p></div>
+</main><footer class="site">Same synthetic data as the Streamlit sample workbook.</footer></body></html>
