@@ -1,59 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Cafe QC — Action Points Demo</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="site">
-  <a class="brand" href="index.html">Cafe QC</a>
-  <div class="tagline">Store-level refund &amp; rating quality dashboard — live demo</div>
-</header>
-<nav class="site">
-  <a href="index.html">Overview</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="best.html">Best stores</a>
-  <a href="worst.html">Worst stores</a>
-  <a href="worst-skus.html">Worst SKUs</a>
-  <a href="action-points.html" class="active">Action points</a>
-</nav>
-<main>
-  <div class="banner">Synthetic sample data — see the <a href="index.html">overview</a> for what's real vs. illustrative.</div>
-  <h1>Prioritized store &times; defect fixes</h1>
-  <p class="lede">impact_score = refund_rate_for_defect &times; severity (avg refund $ for that defect at that store). Output of <code>/cafe-action-points</code>. Ranked descending; no minimum-instance floor, so a single expensive refund can outrank a more systemic issue.</p>
-
-  <div class="card">
-    <h2 style="margin-top:0">Region B (top 5)</h2>
-    <table>
-      <thead><tr><th>Store</th><th>Defect</th><th>Impact score</th><th>Instances</th><th>Suggested fix</th></tr></thead>
-      <tbody>
-        <tr><td>Foothill</td><td>Quality not fresh</td><td>0.0980</td><td>6</td><td>Audit ingredient rotation/shelf life and prep timing</td></tr>
-        <tr><td>Fairview</td><td>Quality not fresh</td><td>0.0917</td><td>28</td><td>Audit ingredient rotation/shelf life and prep timing — high instance count, genuinely systemic</td></tr>
-        <tr><td>Northbridge</td><td>Return request accepted</td><td>0.0867</td><td>10</td><td>Review specific return reasons logged for a pattern</td></tr>
-        <tr><td>Fairview</td><td>Wrong item</td><td>0.0759</td><td>20</td><td>Spot-check picking accuracy against order tickets</td></tr>
-        <tr><td>Fairview</td><td>Item damaged</td><td>0.0579</td><td>12</td><td>Inspect packaging and courier handling protocols</td></tr>
-      </tbody>
-    </table>
-    <p class="note">Fairview appears 3 times on this list with 3 different defect types — consistent with it being flagged as the standout genuine concern on the worst-stores page. Foothill tops the list on a single defect type despite only 6 instances at a low-volume store (600 units sold); worth checking it's a real pattern and not a couple of noisy refunds before treating it as equally urgent as Fairview's.</p>
-  </div>
-
-  <div class="card">
-    <h2 style="margin-top:0">Region A (top 5)</h2>
-    <table>
-      <thead><tr><th>Store</th><th>Defect</th><th>Impact score</th><th>Instances</th><th>Suggested fix</th></tr></thead>
-      <tbody>
-        <tr><td>Lakeside</td><td>Quality not fresh</td><td>0.0736</td><td>20</td><td>Audit ingredient rotation/shelf life and prep timing</td></tr>
-        <tr><td>Harbor Point</td><td>Wrong item</td><td>0.0735</td><td>7</td><td>Spot-check picking accuracy against order tickets</td></tr>
-        <tr><td>Maple Street</td><td>Quality not fresh</td><td>0.0600</td><td>2</td><td>Audit ingredient rotation/shelf life and prep timing — only 2 instances, treat as directional</td></tr>
-        <tr><td>Lakeside</td><td>Wrong item</td><td>0.0528</td><td>12</td><td>Spot-check picking accuracy against order tickets</td></tr>
-        <tr><td>Harbor Point</td><td>Quality not fresh</td><td>0.0440</td><td>5</td><td>Audit ingredient rotation/shelf life and prep timing</td></tr>
-      </tbody>
-    </table>
-    <p class="note">Maple Street's row is the one to sanity-check here: it ranks 3rd on just 2 refund instances at a very low-volume store (300 units sold), a good live example of why the skill's rule is to call out low instance counts explicitly rather than presenting every row as equally reliable.</p>
-  </div>
-</main>
-<footer class="site">Synthetic demo data. Not derived from any real business. MIT licensed — see the repo.</footer>
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Multi-Chain QC — Action Points</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="site"><a class="brand" href="index.html">Multi-Chain QC</a><div class="tagline">Prioritized defects — shared synthetic sample</div></header>
+<nav class="site"><a href="index.html">Overview</a><a href="dashboard.html">Dashboard</a><a href="best.html">Best stores</a><a href="worst.html">Worst stores</a><a href="worst-skus.html">Worst SKUs</a><a href="action-points.html" class="active">Action points</a></nav>
+<main><div class="banner">Generated from the same synthetic workbook used by the Streamlit app. Impact score = defect refund rate × average refund severity.</div>
+<h1>Prioritized store × defect fixes</h1>
+<div class="card"><h2 style="margin-top:0">Region A — top 5</h2><table><thead><tr><th>Store</th><th>Defect</th><th>Impact score</th><th>Instances</th><th>Customer feedback confirms?</th></tr></thead><tbody>
+<tr><td>Central Market</td><td>item_damaged</td><td>0.285364</td><td>16</td><td>Yes</td></tr>
+<tr><td>Garden District</td><td>quality_not_fresh</td><td>0.148416</td><td>11</td><td>Yes</td></tr>
+<tr><td>Old Mill</td><td>item_missing</td><td>0.052348</td><td>6</td><td>No</td></tr>
+<tr><td>Central Market</td><td>temperature_not_right</td><td>0.044057</td><td>2</td><td>No</td></tr>
+<tr><td>Central Market</td><td>item_missing</td><td>0.038207</td><td>2</td><td>No</td></tr>
+</tbody></table></div>
+<div class="card"><h2 style="margin-top:0">Region B — top 5</h2><table><thead><tr><th>Store</th><th>Defect</th><th>Impact score</th><th>Instances</th><th>Customer feedback confirms?</th></tr></thead><tbody>
+<tr><td>Market Street</td><td>wrong_item</td><td>0.172112</td><td>7</td><td>Yes</td></tr>
+<tr><td>South Quay</td><td>quality_not_fresh</td><td>0.159411</td><td>11</td><td>No</td></tr>
+<tr><td>City Gate</td><td>quality_not_fresh</td><td>0.147550</td><td>17</td><td>Yes</td></tr>
+<tr><td>Fairview</td><td>item_damaged</td><td>0.111145</td><td>15</td><td>Yes</td></tr>
+<tr><td>Canal Walk</td><td>item_missing</td><td>0.055098</td><td>10</td><td>Yes</td></tr>
+</tbody></table></div>
+</main><footer class="site">Same synthetic data as the Streamlit sample workbook.</footer></body></html>
