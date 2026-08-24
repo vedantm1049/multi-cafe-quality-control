@@ -1,180 +1,214 @@
-# Multi-Chain Quality Control
+# AI Quality Control for Multi-Chain F&B Operations
 
-Store-level refund and rating quality analysis for a multi-region coffee
-retail network, built from a periodic 8-sheet QC data export.
+Turn thousands of ratings, refunds, complaints and sales records across hundreds of locations into ranked stores, root causes and actionable QC priorities.
 
-**[Live demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** — a static,
-pre-baked version of the dashboard, built from the synthetic sample data
-bundled in this repo. See "Live demo & real data" below for what that
-does and doesn't include.
+**[Try the live demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** — a static version of the dashboard built from synthetic sample data.
 
-## The problem, and what this automates
+> Built for multi-brand, multi-region F&B operations where quality control cannot rely on manually reviewing spreadsheets store by store.
 
-Store ops teams get a periodic QC export with hundreds to thousands of
-refund events, ratings, and sales rows spread across 8 sheets — turning
-that into "which stores need attention and why" used to mean a manual
-pass in a spreadsheet every period: matching store aliases across three
-different identifier systems, weighting for volume so a quiet store's one
-bad week doesn't look worse than a busy store's genuine problem, and
-reading through free-text complaints by hand.
+## What this does
 
-This plugin turns that into a conversation. Upload the export, ask a
-question in plain language or run a slash command, and it validates the
-data, asks only for what it can't infer, runs the scoring engine, and
-hands back a ranked table, a chart, or an exportable sheet — consistently,
-using the same locked scoring rules every time.
+Upload a periodic QC workbook and ask a question in plain language or run a slash command. The system validates the data, resolves store identities across different source systems, applies the same locked scoring rules every time, and returns the operational answer you need.
+
+It can:
+
+- rank the best and worst-performing stores;
+- identify the worst-performing SKUs by location;
+- prioritize store × defect combinations by operational impact;
+- combine refund, rating, sales and complaint signals;
+- generate an interactive QC dashboard;
+- answer open-ended questions about trends, categories and locations.
+
+The goal is not another dashboard. The goal is to answer one operating question quickly:
+
+**Which locations need attention, why, and what should the team fix first?**
+
+## Why this is hard at scale
+
+Large F&B networks rarely have one clean source of truth. The same location can appear under different names or codes across refunds, ratings, sales and mapping files. High-volume stores naturally generate more complaints and refunds than low-volume stores. Free-text customer feedback also needs to be connected back to structured operational defects.
+
+This system is designed around those problems:
+
+- **Store identity resolution** — maps different store names and identifiers back to one location and surfaces unmatched stores instead of guessing.
+- **Volume-aware scoring** — adjusts comparisons so a quiet store with one bad week does not automatically look worse than a busy store with a persistent quality problem.
+- **Multiple QC signals** — brings refunds, ratings, sales and customer complaints into one scoring workflow.
+- **Root-cause prioritization** — ranks specific store × defect combinations, rather than only showing an overall store score.
+- **Consistent decisions** — all commands use one shared scoring engine, so the answer does not change depending on how the question was asked.
+
+## From raw data to action
+
+```mermaid
+flowchart LR
+    A[Refunds] --> E[Validate + resolve store identity]
+    B[Ratings] --> E
+    C[Sales] --> E
+    D[Store mapping] --> E
+    E --> F[Shared QC scoring engine]
+    F --> G[Rank stores]
+    F --> H[Find worst SKUs]
+    F --> I[Prioritize defects]
+    F --> J[Interactive dashboard]
+    F --> K[Conversational analysis]
+```
+
+A typical output does not stop at **"Store X has a low score."** It helps the operator move toward an action such as:
+
+**Store X → Beverage quality → high refund impact → confirmed by customer feedback → investigate first.**
+
+## Six operating workflows
+
+| Skill | Trigger | What it answers |
+|---|---|---|
+| `cafe-dashboard` | `/cafe-dashboard` | How is the network performing overall? |
+| `cafe-worst-skus` | `/cafe-worst-skus` | Which products are creating the most refunds at each store? |
+| `cafe-action-points` | `/cafe-action-points` | Which store × defect problems should the team fix first? |
+| `cafe-best` | `/cafe-best` | Which stores are performing best? |
+| `cafe-worst` | `/cafe-worst` | Which stores need the most attention? |
+| `cafe-analysis` | `/cafe-analysis` | What other trends or patterns exist in the data? |
+
+All six skills use the same engine: `scripts/cafe_qc_engine.py`.
+
+That engine handles data loading, validation, store-identity resolution and scoring. The full data contract and formulas are documented in `references/data-contract-and-scoring.md`.
+
+## How the agent works
+
+Every skill follows the same five-step loop:
+
+1. **Locate** — find the uploaded QC workbook.
+2. **Validate** — check the workbook structure and surface missing columns, sheets or unmatched stores.
+3. **Elicit** — ask only for information that cannot be inferred, such as region, timeframe or output count.
+4. **Run** — call the shared Python scoring engine.
+5. **Present** — return the result as a table, chart, exportable sheet, dashboard or conversational analysis.
+
+Because the scoring logic lives in one shared engine, a store's score means the same thing whether it appears in `/cafe-best`, `/cafe-worst`, the dashboard or a natural-language question.
+
+## Input data
+
+The current implementation expects a fresh 8-sheet `.xlsx` workbook for each analysis period:
+
+- `refund_region_a`
+- `refund_region_b`
+- `rating_region_a`
+- `rating_region_b`
+- `mapping_region_a`
+- `mapping_region_b`
+- `sales_region_a`
+- `sales_region_b`
+
+The structure models two independent operating regions with different store master lists and volume profiles. It can be adapted to other region or brand structures.
+
+No real business data is included in this public repository.
+
+## Live demo
+
+**[Open the demo](https://vedantm1049.github.io/multi-cafe-quality-control/)**
+
+The GitHub Pages demo uses 16 fabricated stores across two synthetic regions. Store names, refunds, ratings and sales are invented, but the outputs are generated using the real scoring logic in `scripts/cafe_qc_engine.py`.
+
+The demo includes:
+
+- network dashboard;
+- best stores;
+- worst stores;
+- worst SKUs;
+- prioritized action points.
+
+The current browser demo is a fixed snapshot. It does not yet let a user upload a workbook and run the Python engine directly in the browser. To analyze a new workbook today, use the plugin in Claude Code or Cowork.
 
 ## Installation
 
-This is a [Claude Code](https://docs.claude.com/en/docs/claude-code) /
-Cowork plugin. To install it from this repo:
+This repository is structured as a Claude Code / Cowork plugin.
 
 ```bash
-git clone https://github.com/vedantm1049/cafe-qc.git
+git clone https://github.com/vedantm1049/multi-cafe-quality-control.git
 ```
 
-Then, in Claude Code or Cowork, add it as a plugin source pointing at the
-cloned folder (or add this repo directly as a marketplace source, if
-you're distributing it to a team). See the
-[Claude Code plugin docs](https://docs.claude.com/en/docs/claude-code) for
-the exact install flow, since it may change.
+Then add the cloned repository as a plugin source in Claude Code or Cowork.
 
-No real data is bundled with this repo — you supply your own QC workbook
-export each time you use it (see Usage below). The `docs/` folder's
-synthetic sample data exists only to power the live demo.
-
-## Overview
-
-Upload the Cafe QC workbook (`refund_region_a`, `refund_region_b`,
-`rating_region_a`, `rating_region_b`, `mapping_region_a`,
-`mapping_region_b`, `sales_region_a`, `sales_region_b`) and use any of the
-six skills below. All 8 sheets are expected fresh each period — there's
-no reliance on a prior upload.
-
-## Components
-
-| Skill | Trigger | Output |
-|---|---|---|
-| `cafe-dashboard` | `/cafe-dashboard` | Interactive HTML — store-level view + complaint-type breakdown, region_a/region_b toggle |
-| `cafe-worst-skus` | `/cafe-worst-skus` | Exportable sheet — worst 3/5 SKUs per store, by raw refund count |
-| `cafe-action-points` | `/cafe-action-points` | Inline ranked table (+ optional export) — top store×defect-type combos by impact score |
-| `cafe-best` | `/cafe-best` | Inline ranked table (+ optional export) — top stores by composite score |
-| `cafe-worst` | `/cafe-worst` | Inline ranked table (+ optional export) — bottom stores by composite score |
-| `cafe-analysis` | `/cafe-analysis` | Conversational, open-ended trend/category analysis |
-
-All six skills share one engine (`scripts/cafe_qc_engine.py`) for data
-loading, store-identity resolution, and scoring, so results are
-consistent across commands. Full data contract, store-identity
-resolution logic, and scoring formulas are documented in
-`references/data-contract-and-scoring.md`; the shared per-command
-workflow (locate file → validate → elicit → run → present) is in
-`references/running-the-engine.md`.
-
-## How it works
-
-Every skill follows the same agentic loop, defined once in
-`references/running-the-engine.md` and reused by all six commands:
-
-1. **Locate** — find the uploaded Cafe QC workbook in the conversation.
-2. **Validate** — run the engine's `validate` command, surface any
-   unmatched stores or data-contract issues before doing anything else.
-3. **Elicit** — ask the user only for what can't be inferred from context
-   (region, timeframe, count), skipping anything already given.
-4. **Run** — call the shared Python engine (`cafe_qc_engine.py`) so every
-   skill scores off the same logic.
-5. **Present** — format the result per that command's spec (inline table,
-   exportable sheet, interactive dashboard, or conversational analysis).
-
-Keeping this loop identical across all six skills is what makes the
-outputs comparable — a store's composite score means the same thing
-whether you got there through `/cafe-best`, `/cafe-worst`, or a freeform
-question.
-
-## Setup
-
-No external services or credentials required. Requires Python 3 with
-`pandas`, `numpy`, and `openpyxl` available in the sandbox (already
-present in Cowork's Linux sandbox).
+No external API or credentials are required. The engine requires Python 3 with `pandas`, `numpy` and `openpyxl`.
 
 ## Usage
 
-Upload the Cafe QC workbook in a Cowork conversation, then type any of
-the slash commands above (or ask in natural language — e.g. "show me the
-worst-performing stores in region_b this month"). Each skill will run
-`cafe_qc_engine.py validate` first and surface any data-contract issues
-(missing sheet/column, unmatched store name) before producing output.
+Upload the QC workbook and either run one of the six slash commands or ask a question in natural language.
 
-## Live demo & real data
+For example:
 
-`docs/` is a static site (GitHub Pages) built from a small, entirely
-synthetic sample workbook — fabricated store names, fabricated numbers,
-generated by hand to exercise the engine's real code paths (alias fixes,
-an excluded location, a mapping collision, the asymmetric sample floor,
-all three volume tiers) without containing anyone's actual business data.
-The scoring shown there uses the exact formulas in
-`scripts/cafe_qc_engine.py` — nothing in the demo is fudged, only the
-underlying inputs are made up.
+```text
+Show me the 10 worst-performing stores in region_b this month.
+```
 
-It's a fixed snapshot, not a live engine: there's no upload button and no
-backend, so it always shows the same sample period. To run this against
-your own export, use the plugin inside Claude Code/Cowork as described
-above.
+```text
+Which store and defect combinations are driving the highest refund impact?
+```
 
-**Future work:** a real interactive version — upload your own workbook in
-the browser and get live rankings/action-points back, no Claude required
-— would need a backend wrapping the engine plus a hosting account to run
-it on. Not built yet; the static demo covers the "see what this looks
-like" use case for now.
+```text
+What patterns do you see in customer complaints this period?
+```
 
-## Known design decisions worth knowing about
+Every workflow validates the workbook before analysis. If the input has a missing sheet, missing column or unresolved store mapping, the system surfaces the issue instead of silently guessing.
 
-- **Low-volume stores are handicapped, not scored in an isolated peer
-  group.** Busier stores handle more transactions and so have more
-  chances to make a mistake, so stores are bucketed into 3 volume tiers
-  by `units_sold` (terciles — Low/Medium/High), and each store's raw
-  refund rate and raw rating-badness are multiplied by its tier's
-  handicap (`VOLUME_TIER_MULTIPLIERS` — Low ×1.30, Medium ×1.00, High
-  ×0.75, a "Moderate" strength) *before* everyone is normalized together
-  on one scale. This is applied to both refund rate and rating, per an
-  explicit locked decision — a low-volume store's rating has to be
-  genuinely higher than a busy store's, not just equal, to score as
-  well. An earlier version of this plugin normalized each tier
-  independently instead, which let the best store in a small, quiet
-  tier score identically to the best store in a large, busy tier even
-  when its raw numbers were meaningfully worse — the handicap approach
-  replaced it to fix exactly that gap. See `assign_volume_tiers()` and
-  the scoring block in `compute_store_table()` in
-  `scripts/cafe_qc_engine.py`, and the "Volume handicap" section of
-  `references/data-contract-and-scoring.md` for the full mechanism and
-  a worked example.
-- **Minimum sample floor** (10 rated orders / 1,200 units sold per store)
-  is applied **asymmetrically**, per an explicit locked decision:
-  region_a never has a floor (best or worst); region_b applies it to
-  `/cafe-best` only, not `/cafe-worst`. It never applies to
-  `cafe-worst-skus` or `cafe-action-points` in either region. The floor
-  is based on units sold, not refund count — `refund_rate` is refund
-  count ÷ units sold, so flooring by sales volume protects the
-  denominator instead of arbitrarily requiring a minimum number of
-  refunds. 1,200 is calibrated for a full monthly period; a shorter
-  sub-range will exclude more region_b best-list stores than intended.
-  See `floor_applies()` in `scripts/cafe_qc_engine.py` and the "Minimum
-  sample floor" section of `references/data-contract-and-scoring.md` for
-  the full rule.
-- **Store alias corrections** are hardcoded in `scripts/cafe_qc_engine.py`
-  (`REGION_A_ALIAS_FIX` / `REGION_B_ALIAS_FIX`) — the pairs shipped here
-  are illustrative examples for the bundled synthetic demo data. In a
-  real deployment, populate these from a manual audit of your own export.
-  If a future upload introduces a new spelling variant that isn't
-  covered, `validate` will report it as unmatched rather than guess — at
-  that point, add the new pair to the relevant dict.
-- **Action-point confirmation flag** (`confirmed_by_customer_feedback`)
-  relies on a defect-code → complaint-tag correspondence
-  (`DEFECT_TAG_MAP` in the engine) that is *inferred* from two plausible
-  vocabularies — it isn't guaranteed by the data contract itself. Revisit
-  this mapping if new `adjustment_reason_code` values show up in a future
-  upload that aren't in the dict (they'll just get
-  `confirmed_by_customer_feedback: false` by default, which is a safe
-  fallback but worth checking).
+## Scoring and design decisions
+
+The scoring system is intentionally deterministic and documented. AI handles the interaction and workflow orchestration; the core ranking logic remains reproducible.
+
+<details>
+<summary><strong>Volume-aware store scoring</strong></summary>
+
+Busier stores handle more transactions and therefore have more opportunities to generate refunds or low ratings. Stores are grouped into Low, Medium and High volume tiers. Their refund and rating signals are adjusted before the network is normalized onto one comparison scale.
+
+The current multipliers are Low ×1.30, Medium ×1.00 and High ×0.75.
+
+See `assign_volume_tiers()` and `compute_store_table()` in `scripts/cafe_qc_engine.py`, plus the worked example in `references/data-contract-and-scoring.md`.
+
+</details>
+
+<details>
+<summary><strong>Minimum sample floor</strong></summary>
+
+The engine protects selected rankings from tiny sample sizes. The current minimum floor is 10 rated orders / 1,200 units sold per store and is applied asymmetrically according to the operating rules encoded in the engine.
+
+The floor uses sales volume rather than refund count because sales form the denominator of the refund rate.
+
+See `floor_applies()` in `scripts/cafe_qc_engine.py` for the exact implementation.
+
+</details>
+
+<details>
+<summary><strong>Store identity resolution</strong></summary>
+
+Refund, rating and sales data can identify the same store differently. The mapping layer resolves those identifiers before scoring.
+
+Known aliases can be configured explicitly. New unmatched names are surfaced during validation rather than automatically merged into the wrong store.
+
+</details>
+
+<details>
+<summary><strong>Customer-feedback confirmation</strong></summary>
+
+Action points can be checked against customer complaint tags. A defect-to-complaint mapping determines whether an operational defect is independently supported by customer feedback.
+
+Unknown defect codes fall back safely rather than being treated as confirmed.
+
+</details>
+
+For the complete implementation details, see `references/data-contract-and-scoring.md` and `references/running-the-engine.md`.
+
+## Project structure
+
+```text
+.claude-plugin/                 Plugin metadata
+skills/                         Six agent skills / commands
+scripts/cafe_qc_engine.py       Shared validation and scoring engine
+references/                     Data contract, scoring and workflow docs
+docs/                           GitHub Pages demo
+LICENSE                         MIT license
+```
+
+## Roadmap
+
+The main next step is a fully interactive browser version:
+
+**Upload your own workbook → run the QC engine → get live rankings and action points without requiring Claude Code or Cowork.**
 
 ## License
 
