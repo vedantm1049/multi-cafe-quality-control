@@ -1,0 +1,44 @@
+name: Rebuild static demo
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/sample_workbook.py"
+      - "scripts/cafe_qc_engine.py"
+      - "scripts/cafe_qc_web_engine.py"
+      - "scripts/build_static_demo.py"
+      - ".github/workflows/build-static-demo.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate static demo data
+        run: python scripts/build_static_demo.py
+
+      - name: Commit generated demo files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/demo-data.js docs/sample-qc-workbook.xlsx
+          if git diff --cached --quiet; then
+            echo "Static demo is already up to date."
+          else
+            git commit -m "Regenerate static demo data"
+            git push
+          fi
