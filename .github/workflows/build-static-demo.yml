@@ -6,8 +6,8 @@ on:
     paths:
       - "scripts/sample_workbook.py"
       - "scripts/cafe_qc_engine.py"
-      - "scripts/cafe_qc_web_engine.py"
       - "scripts/build_static_demo.py"
+      - "tests/**"
       - ".github/workflows/build-static-demo.yml"
 
 permissions:
@@ -27,6 +27,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
 
       - name: Generate static demo data
         run: python scripts/build_static_demo.py
