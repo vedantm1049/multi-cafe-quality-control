@@ -1,6 +1,8 @@
 # AI Quality Control for Multi-Chain F&B Operations
 
-Turn thousands of ratings, refunds, complaints and sales records across hundreds of locations into ranked stores, root causes and actionable QC priorities.
+Turn thousands of ratings, refunds, complaints and sales records across hundreds of locations into ranked stores, root causes and actionable quality control priorities.
+
+<img width="988" height="811" alt="image" src="https://github.com/user-attachments/assets/867d8059-9e07-4fcb-a031-bb484d18c4bf" />
 
 **[Try the live demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** — a static version of the dashboard built from synthetic sample data.
 
@@ -11,7 +13,6 @@ Turn thousands of ratings, refunds, complaints and sales records across hundreds
 Upload a periodic QC workbook and ask a question in plain language or run a slash command. The system validates the data, resolves store identities across different source systems, applies the same locked scoring rules every time, and returns the operational answer you need.
 
 It can:
-
 - rank the best and worst-performing stores;
 - identify the worst-performing SKUs by location;
 - prioritize store × defect combinations by operational impact;
