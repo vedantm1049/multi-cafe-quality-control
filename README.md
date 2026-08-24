@@ -2,11 +2,11 @@
 
 Turn thousands of ratings, refunds, complaints and sales records across hundreds of locations into ranked stores, root causes and actionable quality control priorities.
 
-<img width="988" height="811" alt="Multi-Chain QC dashboard" src="https://github.com/user-attachments/assets/867d8059-9e07-4fcb-a031-bb484d18c4bf" />
-
-**[Try the live app](https://multi-cafe-quality-control.streamlit.app/)** — upload your own 8-sheet QC workbook or run the included synthetic sample end-to-end.
+<img width="457" height="461" alt="image" src="https://github.com/user-attachments/assets/964b6992-0b9d-4df4-a39f-412836fbe1c4" />
 
 **[Open the static preview](https://vedantm1049.github.io/multi-cafe-quality-control/)** — browse the same synthetic sample as a fixed GitHub Pages dashboard.
+
+**[Try the live app](https://multi-cafe-quality-control.streamlit.app/)** — upload your own 8-sheet QC workbook or run the included synthetic sample end-to-end.
 
 > Built for multi-brand, multi-region F&B operations where quality control cannot rely on manually reviewing spreadsheets store by store.
 
