@@ -14,7 +14,7 @@ from scripts.sample_workbook import build_sample_workbook
 
 
 ROOT = Path(__file__).resolve().parent
-ENGINE = ROOT / "scripts" / "cafe_qc_web_engine.py"
+ENGINE = ROOT / "scripts" / "cafe_qc_engine.py"
 
 st.set_page_config(
     page_title="Multi-Chain F&B Quality Control",
