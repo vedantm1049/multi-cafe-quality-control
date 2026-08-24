@@ -438,15 +438,17 @@ def compute_store_table(region_data, start=None, end=None, apply_floor=True):
         else:
             eligible["normalized_refund_badness"] = 50.0
 
-        # rating_badness_raw: 0 = perfect 5-star rating, 100 = worst possible
-        # (1-star). Handicapped the same way as refund rate, then flipped
-        # back into a goodness score.
+        # Rating is converted to badness before weighting so both composite
+        # inputs have the same direction: 0 = low risk, 100 = high risk.
+        # Keep goodness as an output field because it is useful for display,
+        # but never mix goodness with refund badness in the risk score.
         rating_badness_raw = (5 - eligible["avg_rating"]) / 4 * 100
         eligible["adjusted_rating_badness"] = rating_badness_raw * eligible["volume_handicap_multiplier"]
-        eligible["normalized_rating_goodness"] = (100 - eligible["adjusted_rating_badness"]).clip(0, 100)
+        eligible["normalized_rating_badness"] = eligible["adjusted_rating_badness"].clip(0, 100)
+        eligible["normalized_rating_goodness"] = (100 - eligible["normalized_rating_badness"]).clip(0, 100)
 
         eligible["composite_score"] = 0.6 * eligible["normalized_refund_badness"] + \
-                                       0.4 * eligible["normalized_rating_goodness"]
+                                       0.4 * eligible["normalized_rating_badness"]
 
     excluded = table[~table.index.isin(eligible.index)].copy()
     excluded_reason = []
@@ -493,6 +495,7 @@ def store_rows(df, sort_col, ascending, n):
             "volume_tier": row["volume_tier_label"],
             "volume_handicap_multiplier": round(float(row["volume_handicap_multiplier"]), 2),
             "normalized_refund_badness": round(float(row["normalized_refund_badness"]), 2),
+            "normalized_rating_badness": round(float(row["normalized_rating_badness"]), 2),
             "normalized_rating_goodness": round(float(row["normalized_rating_goodness"]), 2),
         })
     return out
