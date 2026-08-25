@@ -2,5 +2,6 @@ __pycache__/
 *.pyc
 .DS_Store
 *.xlsx
+!docs/sample-qc-workbook.xlsx
 *.xls
 *.csv
