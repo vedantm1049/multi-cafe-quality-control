@@ -23,6 +23,8 @@ It can:
 - generate an interactive QC dashboard;
 - answer open-ended questions about trends, categories and locations.
 
+In production, this is what held order ratings at 4.5/5 and retention at 47% while the network scaled to 85 sites.
+
 The goal is not another dashboard. The goal is to answer one operating question quickly:
 
 **Which locations need attention, why, and what should the team fix first?**
