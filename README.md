@@ -1,4 +1,5 @@
 # AI Quality Control for Multi-Chain F&B Operations
+![Build Static Demo](https://github.com/vedantm1049/multi-cafe-quality-control/actions/workflows/build-static-demo.yml/badge.svg)
 
 Turn thousands of ratings, refunds, complaints and sales records across hundreds of locations into ranked stores, root causes and actionable quality control priorities.
 
