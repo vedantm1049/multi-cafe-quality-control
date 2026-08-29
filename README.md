@@ -9,6 +9,8 @@ Turn thousands of ratings, refunds, complaints and sales records across hundreds
 
 **[Try the live app](https://multi-cafe-quality-control.streamlit.app/)** — upload your own 8-sheet QC workbook or run the included synthetic sample end-to-end.
 
+**[Read the product decisions](product-decisions.md)** — the trade-offs behind the scoring weights, the volume-fairness design, and what's next.
+
 > Built for multi-brand, multi-region F&B operations where quality control cannot rely on manually reviewing spreadsheets store by store.
 
 ## What this does
