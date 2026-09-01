@@ -26,7 +26,7 @@ It can:
 - generate an interactive QC dashboard;
 - answer open-ended questions about trends, categories and locations.
 
-In production, this is what held order ratings at 4.5/5 and retention at 47% while the network scaled to 85 sites.
+The system became part of the production QC loop as the network scaled to 85 sites, while order ratings remained at 4.5/5 and retention reached 47%.
 
 The goal is not another dashboard. The goal is to answer one operating question quickly:
 
