@@ -5,9 +5,9 @@ Turn thousands of ratings, refunds, complaints and sales records across hundreds
 
 <img width="457" height="461" alt="image" src="https://github.com/user-attachments/assets/964b6992-0b9d-4df4-a39f-412836fbe1c4" />
 
-**[Open the static preview](https://vedantm1049.github.io/multi-cafe-quality-control/)** — browse the same synthetic sample as a fixed GitHub Pages dashboard.
+**[Open the demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** — start here. Browse the synthetic sample as a static GitHub Pages dashboard, with no app startup required.
 
-**[Try the live app](https://multi-cafe-quality-control.streamlit.app/)** — upload your own 8-sheet QC workbook or run the included synthetic sample end-to-end.
+**[Upload and analyze in Streamlit](https://multi-cafe-quality-control.streamlit.app/)** — upload your own 8-sheet QC workbook or run the included synthetic sample end-to-end. The app may need to wake up on first load.
 
 **[Read the product decisions](product-decisions.md)** — the trade-offs behind the scoring weights, the volume-fairness design, and what's next.
 
@@ -34,9 +34,9 @@ The goal is not another dashboard. The goal is to answer one operating question 
 
 ## Try it yourself
 
-Open the **[live Streamlit app](https://multi-cafe-quality-control.streamlit.app/)**.
+Start with the **[static demo](https://vedantm1049.github.io/multi-cafe-quality-control/)** to explore the dashboard and sample results without waiting for Streamlit to start.
 
-You can either:
+To analyze a workbook, open the **[Streamlit app](https://multi-cafe-quality-control.streamlit.app/)**. It may need to wake up on first load. You can either:
 
 1. upload your own `.xlsx` workbook that matches the 8-sheet data contract; or
 2. click **Use Sample Workbook** to run a deterministic synthetic dataset immediately.
