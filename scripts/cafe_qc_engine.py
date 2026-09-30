@@ -328,6 +328,37 @@ def apply_date_range(df, col, start, end):
     return out
 
 
+def sales_for_period(region_data, start=None, end=None):
+    """Sales for the selected period. The sales sheets carry no dates, only
+    each store's totals for the whole workbook, so they cannot be filtered
+    like refunds and ratings. When a sub-period is selected, each store's
+    units_sold and gmv are scaled by the share of the workbook's days the
+    period covers (the days spanned by its refund and rating timestamps).
+    Without this, a sub-period's refunds were divided by the full workbook's
+    sales, understating every refund rate. The scaling assumes sales are
+    spread evenly across the workbook's days.
+    """
+    sales = region_data["sales"]
+    if not start and not end:
+        return sales
+    stamps = pd.concat([
+        region_data["refund"].get("order_created_timestamp", pd.Series(dtype="datetime64[ns]")),
+        region_data["rating"].get("created_at", pd.Series(dtype="datetime64[ns]")),
+    ]).dropna()
+    if stamps.empty:
+        return sales
+    span_start, span_end = stamps.min().normalize(), stamps.max().normalize()
+    total_days = (span_end - span_start).days + 1
+    sel_start = max(span_start, pd.Timestamp(start).normalize()) if start else span_start
+    sel_end = min(span_end, pd.Timestamp(end).normalize()) if end else span_end
+    share = max(0, (sel_end - sel_start).days + 1) / total_days
+    scaled = sales.copy()
+    for col in ("units_sold", "gmv"):
+        if col in scaled.columns:
+            scaled[col] = scaled[col] * share
+    return scaled
+
+
 def date_range_summary(sheets):
     ranges = {}
     for region, names in SHEET_NAMES.items():
@@ -394,7 +425,7 @@ def assign_volume_tiers(units_sold_series, n_tiers=VOLUME_TIER_COUNT):
 def compute_store_table(region_data, start=None, end=None, apply_floor=True):
     refund = apply_date_range(region_data["refund"], "order_created_timestamp", start, end)
     rating = apply_date_range(region_data["rating"], "created_at", start, end)
-    sales = region_data["sales"]
+    sales = sales_for_period(region_data, start, end)
     wh_names = region_data["wh_names"]
 
     refund_counts = refund.groupby("wh_code").size().rename("refund_events")
@@ -579,7 +610,7 @@ def cmd_action_points(args):
     rd = load_region(sheets, args.region)
     refund = apply_date_range(rd["refund"], "order_created_timestamp", args.start, args.end)
     rating = apply_date_range(rd["rating"], "created_at", args.start, args.end)
-    sales = rd["sales"]
+    sales = sales_for_period(rd, args.start, args.end)
     wh_names = rd["wh_names"]
 
     units_sold = sales.groupby("wh_code")["units_sold"].sum()
@@ -711,7 +742,7 @@ def cmd_dashboard(args):
         rd = load_region(sheets, region)
         refund = apply_date_range(rd["refund"], "order_created_timestamp", args.start, args.end)
         rating = apply_date_range(rd["rating"], "created_at", args.start, args.end)
-        sales = rd["sales"]
+        sales = sales_for_period(rd, args.start, args.end)
         eligible, excluded, tier_bounds = compute_store_table(rd, args.start, args.end, apply_floor=False)
 
         reason_breakdown = refund["adjustment_reason_code"].value_counts().to_dict()

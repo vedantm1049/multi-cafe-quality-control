@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from scripts.cafe_qc_engine import compute_store_table, store_rows
+from scripts.cafe_qc_engine import compute_store_table, sales_for_period, store_rows
 
 
 class ScoringDirectionTests(unittest.TestCase):
@@ -77,6 +77,41 @@ class ScoringDirectionTests(unittest.TestCase):
 
         self.assertEqual(best[0]["wh_code"], "A")
         self.assertEqual(worst[0]["wh_code"], "B")
+
+
+class PeriodSalesTests(unittest.TestCase):
+    """A sub-period's refunds must be divided by that period's sales, not the
+    whole workbook's. Sales carry no dates, so they are scaled by the share of
+    the workbook's days the period covers."""
+
+    @staticmethod
+    def region_data():
+        # 14 days of data, 2026-08-01 to 2026-08-14; one refund per day at store A.
+        days = pd.date_range("2026-08-01", periods=14, freq="D")
+        return {
+            "wh_names": {"A": "Store A"},
+            "refund": pd.DataFrame({"wh_code": "A", "order_created_timestamp": days, "order_nr": range(14)}),
+            "rating": pd.DataFrame({"wh_code": "A", "rating": 4.5, "created_at": days}),
+            "sales": pd.DataFrame([{"wh_code": "A", "units_sold": 1400, "gmv": 28000}]),
+        }
+
+    def test_whole_workbook_uses_all_sales(self):
+        eligible, _, _ = compute_store_table(self.region_data(), apply_floor=False)
+        self.assertAlmostEqual(eligible.loc["A", "refund_rate"], 14 / 1400)
+
+    def test_first_week_uses_half_the_sales(self):
+        eligible, _, _ = compute_store_table(self.region_data(), "2026-08-01", "2026-08-07", apply_floor=False)
+        self.assertEqual(eligible.loc["A", "units_sold"], 700)
+        # 7 refunds over 700 units, the same rate as the whole workbook, not 7 over 1,400.
+        self.assertAlmostEqual(eligible.loc["A", "refund_rate"], 7 / 700)
+
+    def test_period_outside_the_data_has_no_sales(self):
+        scaled = sales_for_period(self.region_data(), "2026-09-01", "2026-09-07")
+        self.assertEqual(scaled["units_sold"].iloc[0], 0)
+
+    def test_gmv_scales_with_units(self):
+        scaled = sales_for_period(self.region_data(), "2026-08-08", None)
+        self.assertEqual(scaled["gmv"].iloc[0], 14000)
 
 
 if __name__ == "__main__":
